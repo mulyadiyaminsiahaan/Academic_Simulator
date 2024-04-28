@@ -1,0 +1,113 @@
+package academic.driver;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import academic.model.*;
+
+public class Driver1 {
+
+    static final String DB = "jdbc:mysql://localhost:3306/";
+    static final String US = "root";
+    static final String PS = "Mulyad1yam1n.";
+
+    public static void main(String[] args) {
+
+        try  (Connection conn = DriverManager.getConnection(DB, US, PS);
+            Statement stmt = conn.createStatement();) {
+
+            stmt.setQueryTimeout(30);  // set timeout to 30 sec.
+
+            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS KAMU");
+            stmt.executeUpdate("USE KAMU"); // Menggunakan database "KAMU" yang telah dibuat atau sudah ada sebelumnya
+
+            stmt.executeUpdate("DROP TABLE IF EXISTS person"); // Menghapus tabel "person" jika sudah ada sebelumnya
+            stmt.executeUpdate("CREATE TABLE person (id INT, name VARCHAR(255))"); // Membuat tabel "person"
+            stmt.executeUpdate("INSERT INTO person VALUES(1, 'leo')"); // Menambahkan data ke tabel "person"
+            stmt.executeUpdate("INSERT INTO person VALUES(2, 'yui')"); // Menambahkan data ke tabel "person"
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM person");
+            while (rs.next()) {
+                // Membaca hasil dari query
+                System.out.println("name = " + rs.getString("name"));
+                System.out.println("id = " + rs.getInt("id"));
+            }
+
+            Scanner masukan = new Scanner(System.in);
+
+            while (masukan.hasNextLine()){
+                String input = masukan.nextLine();
+                if (input.equals("---")){
+                    break;
+                }
+
+                String[] tokens = input.split("#");
+
+                /*/BANDINGKAN TOKEN 0
+                if (tokens[0].equals("course-add")){
+                    //CEK APAKAH COURSE SUDAH ADA
+                    boolean found = false;
+                    for (Course course : courses) {
+                        if (course.getCode().equals(tokens[1])) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    //JIKA BELUM ADA
+                    if (!found) {
+                        //SPLIT INITIAL
+                        //String[] pisah = tokens[5].split(",");
+                        //MASUKAN SEMUA INITIAL YANG ADA
+                        /*for (int i = 0; i < pisah.length; i++){
+                            for (Lecturer lecturer : lecturers){
+                                if (lecturer.getInitial().equals(pisah[i])){     
+                                    pisah[i] = pisah[i] + " (" + lecturer.getEmail() + ")";                        
+                                }
+                            }
+                        }
+                        Course course = new Course(tokens[1], tokens[2], Integer.parseInt(tokens[3]), tokens[4]);
+                        courses.add(course);
+                    }*/
+
+                if (tokens[0].equals("student-add")){
+                    //addStudent(conn, tokens[1], tokens[2], Integer.parseInt(tokens[3]), tokens[4]);
+
+                }/* else if (tokens[0].equals("enrollment-add")){
+                    //CEK APAKAH COURSE DAN STUDENT TERSEDIA
+                    boolean foundCourse = false;
+                    boolean foundStudent = false;
+                    for (Course course : courses) {
+                        if (course.getCode().equals(tokens[1])) {
+                            foundCourse = true;
+                            break;
+                        }
+                    }
+                    for (Student student : students) {
+                        if (student.getNim().equals(tokens[2])) {
+                            foundStudent = true;
+                            break;
+                        }
+                    }
+                    //JIKA TERSEDIA COURSE DAN STUDENT
+                    if (foundCourse && foundStudent) {
+                        String grade = "None";
+                        Enrollment enrollment = new Enrollment(tokens[1], tokens[2], tokens[3], tokens[4], grade);
+                        enrollments.add(enrollment);
+                    } 
+
+                }*/
+
+            }
+
+
+
+        } catch (SQLException e) {
+            // Menangkap eksepsi SQL
+            e.printStackTrace(System.err);
+        }
+
+    }    
+}
