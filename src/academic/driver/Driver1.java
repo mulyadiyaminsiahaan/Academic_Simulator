@@ -30,6 +30,8 @@ public class Driver1 {
                     database.printAllStudents();
                     // PRINT ALL ENROLLMENT
                     database.printAllEnrollment();
+
+                    masukan.close();
                     break;
                 }
 
@@ -73,14 +75,12 @@ public class Driver1 {
                     //enrollment-remedial#12S1101#12S20001#2020/2021#odd#B
                     database.setRemed(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
 
-                } 
-                      
+                }      
             }
             //paling bawah
             database.shutdown();
         } catch (SQLException sqle) {
             System.out.println(sqle.getMessage());
         }
-
     }
 }

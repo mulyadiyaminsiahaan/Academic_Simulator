@@ -239,7 +239,6 @@ public class ContactDatabase extends AbstractDatabase {
         pStatement.setString(4, year);
         pStatement.setString(5, semester);
 
-        NilaiSebelum = grade;
 
         pStatement.executeUpdate();
 
@@ -248,18 +247,41 @@ public class ContactDatabase extends AbstractDatabase {
 
     // ENROLLMENT SET REMED 
     public void setRemed(String code, String nim, String year, String semester, String grade) throws SQLException {
-        String sql = "UPDATE enrollment SET grade = ? WHERE code = ? AND nim = ? AND year = ? AND semester = ?";
+        String queryEnrollment = "SELECT * FROM enrollment WHERE grade != 'None'";
+        PreparedStatement statementEnrollment = this.getConnection().prepareStatement(queryEnrollment);
+        //statementEnrollment.setString(1, nim);
+        ResultSet enrollmentResult = statementEnrollment.executeQuery();
+
+        while (enrollmentResult.next()) {
+            String Enrolcode = enrollmentResult.getString("code");
+            String Enrollnim = enrollmentResult.getString("nim");
+            String Enrolyear = enrollmentResult.getString("year");
+            String Enrolsemester = enrollmentResult.getString("semester");
+            String Enrollgrade = enrollmentResult.getString("grade");
+
+            if (Enrolcode.equals(code) && Enrollnim.equals(nim) && Enrolyear.equals(year) && Enrolsemester.equals(semester)){
+                NilaiSebelum = Enrollgrade;
+            }
+        }
+
+        String sql = "UPDATE enrollment SET grade = ? WHERE code = ? AND nim = ? AND year = ? AND semester = ? AND grade != 'None'";
+
+        //String
+
+        if (!(NilaiSebelum.equals(""))){
+            PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+            //NilaiSebelum = ;
+            pStatement.setString(1, grade + "(" + NilaiSebelum + ")");
+            pStatement.setString(3, nim);
+            pStatement.setString(2, code);
+            pStatement.setString(4, year);
+            pStatement.setString(5, semester);
+
+            pStatement.executeUpdate();
+
+            pStatement.close();
+        }
         
-        PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-        pStatement.setString(1, grade + "(" + NilaiSebelum + ")");
-        pStatement.setString(3, nim);
-        pStatement.setString(2, code);
-        pStatement.setString(4, year);
-        pStatement.setString(5, semester);
-
-        pStatement.executeUpdate();
-
-        pStatement.close();
     }
 
     //PRINT STUDENT DETAILS tambahkan total ipk mahasiswa dan total sks mahasiswa
@@ -327,20 +349,22 @@ public class ContactDatabase extends AbstractDatabase {
 
             while (Lecturerresult.next()) {
                 IE = Lecturerresult.getString("initial") + "(" + Lecturerresult.getString("email") + ")";
+
+                String sql = "INSERT INTO course_opening (course, year, semester, IE) VALUES (?, ?, ?, ?)";
+
+                PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+                pStatement.setString(1, courseAll);
+                pStatement.setString(2, year);
+                pStatement.setString(3, semester);
+                pStatement.setString(4, IE);
+
+                pStatement.executeUpdate();
+
+                pStatement.close();
+
                 break;
             }
 
-            String sql = "INSERT INTO course_opening (course, year, semester, IE) VALUES (?, ?, ?, ?)";
-
-            PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-            pStatement.setString(1, courseAll);
-            pStatement.setString(2, year);
-            pStatement.setString(3, semester);
-            pStatement.setString(4, IE);
-
-            pStatement.executeUpdate();
-
-            pStatement.close();
         }
 
     
@@ -361,10 +385,15 @@ public class ContactDatabase extends AbstractDatabase {
 
             System.out.println(course + "|" + year + "|" + semester + "|" + IE);
 
-            String queryEnrollment = "SELECT * FROM enrollment WHERE year = ? AND semester = ?";
+            //tokenize course
+            String[] tokens = course.split("\\|");
+            String courseCode = tokens[0];
+
+            String queryEnrollment = "SELECT * FROM enrollment WHERE code = ? AND year = ? AND semester = ?";
             PreparedStatement statementEnrollment = this.getConnection().prepareStatement(queryEnrollment);
-            statementEnrollment.setString(1, year);
-            statementEnrollment.setString(2, semester);
+            statementEnrollment.setString(1, courseCode);
+            statementEnrollment.setString(2, year);
+            statementEnrollment.setString(3, semester);
             ResultSet enrollmentResult = statementEnrollment.executeQuery();
 
             while (enrollmentResult.next()) {
@@ -403,7 +432,7 @@ public class ContactDatabase extends AbstractDatabase {
             Integer year = studentResult.getInt("year");
 
             //cek apakah ada data di dalam enrollment yang memiliki nim yang sama
-            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code AND m1.semester = m2.semester)";
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
             PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
             enrollmentStat.setString(1, nim);
             ResultSet result = enrollmentStat.executeQuery();
@@ -424,22 +453,32 @@ public class ContactDatabase extends AbstractDatabase {
             System.out.println(nim + "|" + studentName + "|" + year + "|" + studyProgram + "|" + String.format("%.2f", totalIPK / totalSKS) + "|" + totalSKS);
         }
 
-        String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code AND m1.semester = m2.semester)";
-        PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
-        enrollmentStat.setString(1, nim);
-        ResultSet result = enrollmentStat.executeQuery();
+        //while
+        String query2 = "SELECT * FROM student WHERE nim = ?";
+        PreparedStatement statement2 = this.getConnection().prepareStatement(query2);
+        statement2.setString(1, nim);
+        ResultSet studentResult2 = statement2.executeQuery();
 
-        // Jika ada data di dalam enrollment
-        while (result.next()) {
-            String Enrollnim = result.getString("nim");
-            String Enrollcode = result.getString("code");
-            String Enrolyear = result.getString("year");
-            String Enrolsemester = result.getString("semester");
-            String Enrollgrade = result.getString("grade");
 
-            System.out.println(Enrollnim + "|" + Enrollcode + "|" + Enrolyear + "|" + Enrolsemester + "|" + Enrollgrade);
-        }
+        while (studentResult2.next()){
+
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
+            PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
+            enrollmentStat.setString(1, nim);
+            ResultSet result = enrollmentStat.executeQuery();
+
+            // Jika ada data di dalam enrollment
+            while (result.next()) {
+                String Enrollnim = result.getString("nim");
+                String Enrollcode = result.getString("code");
+                String Enrolyear = result.getString("year");
+                String Enrolsemester = result.getString("semester");
+                String Enrollgrade = result.getString("grade");
+
+                System.out.println(Enrollcode + "|" + Enrollnim + "|" + Enrolyear + "|" + Enrolsemester + "|" + Enrollgrade);
+            }
         
+        }
         
     
         statement.close();
