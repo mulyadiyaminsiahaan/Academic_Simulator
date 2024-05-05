@@ -52,13 +52,13 @@ public class Driver1 {
                 String input = Input.nextLine();
                 if (input.equals("---")){
                     //PRINT ALL LECTURER
-                    database.printAllLecturers();
+                    //database.printAllLecturers();
                     // PRINT ALL COURSE
-                    database.printAllCourses();
+                    //database.printAllCourses();
                     // PRINT ALL STUDENT
-                    database.printAllStudents();
+                    //database.printAllStudents();
                     // PRINT ALL ENROLLMENT
-                    database.printAllEnrollment();
+                    //database.printAllEnrollment();
 
                     for (Lecturer lecturer : lecturers){
                         System.out.println(lecturer);
