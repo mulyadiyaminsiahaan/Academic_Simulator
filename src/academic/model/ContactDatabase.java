@@ -1,4 +1,4 @@
-package academic.driver;
+package academic.model;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -81,19 +81,19 @@ public class ContactDatabase extends AbstractDatabase {
 
 
     //ADD COURSE
-    public void addCourse(String code, String name, int credits, String grade) throws SQLException {
-        String sql = "INSERT INTO course (code, name, credits, grade) VALUES (?, ?, ?, ?)";
+    // public void addCourse(String code, String name, int credits, String grade) throws SQLException {
+    //     String sql = "INSERT INTO course (code, name, credits, grade) VALUES (?, ?, ?, ?)";
 
-        PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-        pStatement.setString(1, code);
-        pStatement.setString(2, name);
-        pStatement.setInt(3, credits);
-        pStatement.setString(4, grade);
+    //     PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+    //     pStatement.setString(1, code);
+    //     pStatement.setString(2, name);
+    //     pStatement.setInt(3, credits);
+    //     pStatement.setString(4, grade);
 
-        pStatement.executeUpdate();
+    //     pStatement.executeUpdate();
 
-        pStatement.close();
-    }
+    //     pStatement.close();
+    // }
 
     //ADD STUDENT
     public void addStudent(String nim, String name, int year, String studyProgram) throws SQLException {
@@ -546,7 +546,6 @@ public class ContactDatabase extends AbstractDatabase {
        
     @Override
     protected void prepareTables() throws SQLException {
-        // TODO Auto-generated method stub
         this.createTables();
         //this.seedTables();
     }

@@ -1,4 +1,4 @@
-package academic.driver;
+package academic.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,13 +31,10 @@ public abstract class AbstractDatabase {
     
     protected abstract void prepareTables() throws SQLException;{
         this.createTables();
-        //this.seedTables();
     }
 
     protected abstract void createTables() throws SQLException;{
-        // Create tables
-
-
+        
     }
 
 
