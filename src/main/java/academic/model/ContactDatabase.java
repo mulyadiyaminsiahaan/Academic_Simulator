@@ -346,7 +346,7 @@ public class ContactDatabase extends AbstractDatabase {
             ResultSet Lecturerresult = statementLecturer.executeQuery();
 
             while (Lecturerresult.next()) {
-                IE = Lecturerresult.getString("initial") + "(" + Lecturerresult.getString("email") + ")";
+                IE = Lecturerresult.getString("initial") + " (" + Lecturerresult.getString("email") + ")";
 
                 String sql = "INSERT INTO course_opening (course, year, semester, IE) VALUES (?, ?, ?, ?)";
 
