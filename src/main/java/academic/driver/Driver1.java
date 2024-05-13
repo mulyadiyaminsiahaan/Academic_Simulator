@@ -16,7 +16,7 @@ public class Driver1 {
         //java -cp "bin;./libs/*" example.Driver
         try {
             //Contact ke database
-            ContactDatabase database = new ContactDatabase("jdbc:mysql://localhost:3306/DBAcademic");
+            ContactDatabase database = new ContactDatabase("jdbc:sqlite:./database/contacts.db");
             //Masukkan inputan
             Scanner Input = new Scanner(System.in);
 
@@ -87,7 +87,7 @@ public class Driver1 {
             //paling bawah
             database.shutdown();
         } catch (SQLException sqle) {
-            //System.out.println(sqle.getMessage());
+            System.out.println(sqle.getMessage());
         }
 
         

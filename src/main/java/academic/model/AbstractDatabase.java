@@ -5,10 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public abstract class AbstractDatabase {
-    static final String US = "root";
-    static final String PS = "Mulyad1yam1n.";
 
-    protected String url = "jdbc:mysql://localhost:3306/DBAcademic";
+    protected String url ="jdbc:sqlite:./database/contacts.db";
     protected Connection connection = null;
     
     public AbstractDatabase(String url) throws SQLException {
@@ -17,15 +15,15 @@ public abstract class AbstractDatabase {
     }
 
     protected Connection getConnection() throws SQLException {
-        if (connection == null) {
-            connection = DriverManager.getConnection(url, US, PS);
+        if (this.connection == null) {
+            connection = DriverManager.getConnection(this.url);
         }
-        return connection;
+        return this.connection;
     }
 
     public void shutdown() throws SQLException {
-        if (connection != null) {
-            connection.close();
+        if (this.connection != null) {
+            this.connection.close();
         }
     }
     

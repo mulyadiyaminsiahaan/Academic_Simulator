@@ -7,8 +7,6 @@ import java.sql.PreparedStatement;
 
 public class ContactDatabase extends AbstractDatabase {
 
-    static final String US = "root";
-    static final String PS = "Mulyad1yam1n.";
     static String NilaiSebelum = "";
     static Double totalIPK = 0.00;
     static Integer totalSKS = 0;
@@ -431,8 +429,9 @@ public class ContactDatabase extends AbstractDatabase {
             String studyProgram = studentResult.getString("studyProgram");
             Integer year = studentResult.getInt("year");
 
+
             //cek apakah ada data di dalam enrollment yang memiliki nim yang sama
-            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND CAST(SUBSTR(year, INSTR(year, '/') + 1) AS INTEGER) = (SELECT MAX(CAST(SUBSTR(year, INSTR(year, '/') + 1) AS INTEGER)) FROM enrollment m2 WHERE m1.code = m2.code)";
             PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
             enrollmentStat.setString(1, nim);
             ResultSet result = enrollmentStat.executeQuery();
@@ -462,7 +461,9 @@ public class ContactDatabase extends AbstractDatabase {
 
         while (studentResult2.next()){
 
-            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
+            
+
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND CAST(SUBSTR(year, INSTR(year, '/') + 1) AS INTEGER) = (SELECT MAX(CAST(SUBSTR(year, INSTR(year, '/') + 1) AS INTEGER)) FROM enrollment m2 WHERE m1.code = m2.code)";
             PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
             enrollmentStat.setString(1, nim);
             ResultSet result = enrollmentStat.executeQuery();
@@ -481,6 +482,7 @@ public class ContactDatabase extends AbstractDatabase {
         }
         
     
+        statement2.close();
         statement.close();
     }
 
