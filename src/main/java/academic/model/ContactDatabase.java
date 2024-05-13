@@ -1,4 +1,4 @@
-package academic.driver;
+package main.java.academic.model;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -81,19 +81,19 @@ public class ContactDatabase extends AbstractDatabase {
 
 
     //ADD COURSE
-    public void addCourse(String code, String name, int credits, String grade) throws SQLException {
-        String sql = "INSERT INTO course (code, name, credits, grade) VALUES (?, ?, ?, ?)";
+    // public void addCourse(String code, String name, int credits, String grade) throws SQLException {
+    //     String sql = "INSERT INTO course (code, name, credits, grade) VALUES (?, ?, ?, ?)";
 
-        PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-        pStatement.setString(1, code);
-        pStatement.setString(2, name);
-        pStatement.setInt(3, credits);
-        pStatement.setString(4, grade);
+    //     PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+    //     pStatement.setString(1, code);
+    //     pStatement.setString(2, name);
+    //     pStatement.setInt(3, credits);
+    //     pStatement.setString(4, grade);
 
-        pStatement.executeUpdate();
+    //     pStatement.executeUpdate();
 
-        pStatement.close();
-    }
+    //     pStatement.close();
+    // }
 
     //ADD STUDENT
     public void addStudent(String nim, String name, int year, String studyProgram) throws SQLException {
@@ -129,47 +129,18 @@ public class ContactDatabase extends AbstractDatabase {
 
     //add enrollment jika nim pada student dan code pada course ada
     public void addEnrollment(String code, String nim, String year, String semester, String grade) throws SQLException {
-        //enrollment hanya bisa ditambahkan jika nim di student dan code di course ada
-        boolean studentExist = false;
-        boolean courseExist = false;
+        String sql = "INSERT INTO enrollment (code, nim, year, semester, grade) VALUES (?, ?, ?, ?, ?)";
 
-        String studentsql = "SELECT * FROM student WHERE nim = ?";
-        PreparedStatement studentStatement = this.getConnection().prepareStatement(studentsql);
-        studentStatement.setString(1, nim);
-        ResultSet studentResult = studentStatement.executeQuery();
+        PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+        pStatement.setString(2, nim);
+        pStatement.setString(1, code);
+        pStatement.setString(3, year);
+        pStatement.setString(4, semester);
+        pStatement.setString(5, grade);
 
-        while (studentResult.next()) {
-            if (studentResult.getString("nim").equals(nim)) {
-                studentExist = true;
-                break;
-            }
-        }
+        pStatement.executeUpdate();
 
-        String coursesql = "SELECT * FROM course WHERE code = ?";
-        PreparedStatement courseStatement = this.getConnection().prepareStatement(coursesql);
-        courseStatement.setString(1, code);
-        ResultSet courseResult = courseStatement.executeQuery();
-
-        while (courseResult.next()) {
-            if (courseResult.getString("code").equals(code)) {
-                courseExist = true;
-                break;
-            }
-        }
-
-        if (studentExist && courseExist) {
-            String sql = "INSERT INTO enrollment (code, nim, year, semester, grade) VALUES (?, ?, ?, ?, ?)";
-
-            PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-            pStatement.setString(1, code);
-            pStatement.setString(2, nim);
-            pStatement.setString(3, year);
-            pStatement.setString(4, semester);
-            pStatement.setString(5, grade);
-    
-            pStatement.executeUpdate();
-        }
-
+        pStatement.close();
     }
 
 
@@ -268,7 +239,6 @@ public class ContactDatabase extends AbstractDatabase {
         pStatement.setString(4, year);
         pStatement.setString(5, semester);
 
-        //NilaiSebelum = grade;
 
         pStatement.executeUpdate();
 
@@ -277,27 +247,41 @@ public class ContactDatabase extends AbstractDatabase {
 
     // ENROLLMENT SET REMED 
     public void setRemed(String code, String nim, String year, String semester, String grade) throws SQLException {
-    
+        String queryEnrollment = "SELECT * FROM enrollment WHERE grade != 'None'";
+        PreparedStatement statementEnrollment = this.getConnection().prepareStatement(queryEnrollment);
+        //statementEnrollment.setString(1, nim);
+        ResultSet enrollmentResult = statementEnrollment.executeQuery();
 
-        //while (studentResult.next()){
-            //if ( NilaiSebelum.equals("") ){
-                //System.out.println("Nilai Sebelum : ");
-                String getsql = "UPDATE enrollment SET grade = ? WHERE code = ? AND nim = ? AND year = ? AND semester = ?";
-                PreparedStatement getpStatement = this.getConnection().prepareStatement(getsql);
-                NilaiSebelum = grade;
-                //System.out.println("Nilai Sebelum : ");
-                getpStatement.setString(1, grade + "(" + NilaiSebelum + ")");
-                getpStatement.setString(3, nim);
-                getpStatement.setString(2, code);
-                getpStatement.setString(4, year);
-                getpStatement.setString(5, semester);
+        while (enrollmentResult.next()) {
+            String Enrolcode = enrollmentResult.getString("code");
+            String Enrollnim = enrollmentResult.getString("nim");
+            String Enrolyear = enrollmentResult.getString("year");
+            String Enrolsemester = enrollmentResult.getString("semester");
+            String Enrollgrade = enrollmentResult.getString("grade");
 
-                getpStatement.executeUpdate();
-            //}
-        //}
+            if (Enrolcode.equals(code) && Enrollnim.equals(nim) && Enrolyear.equals(year) && Enrolsemester.equals(semester)){
+                NilaiSebelum = Enrollgrade;
+            }
+        }
 
+        String sql = "UPDATE enrollment SET grade = ? WHERE code = ? AND nim = ? AND year = ? AND semester = ? AND grade != 'None'";
 
-        //pStatement.close();
+        //String
+
+        if (!(NilaiSebelum.equals(""))){
+            PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+            //NilaiSebelum = ;
+            pStatement.setString(1, grade + "(" + NilaiSebelum + ")");
+            pStatement.setString(3, nim);
+            pStatement.setString(2, code);
+            pStatement.setString(4, year);
+            pStatement.setString(5, semester);
+
+            pStatement.executeUpdate();
+
+            pStatement.close();
+        }
+        
     }
 
     //PRINT STUDENT DETAILS tambahkan total ipk mahasiswa dan total sks mahasiswa
@@ -365,20 +349,22 @@ public class ContactDatabase extends AbstractDatabase {
 
             while (Lecturerresult.next()) {
                 IE = Lecturerresult.getString("initial") + "(" + Lecturerresult.getString("email") + ")";
+
+                String sql = "INSERT INTO course_opening (course, year, semester, IE) VALUES (?, ?, ?, ?)";
+
+                PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
+                pStatement.setString(1, courseAll);
+                pStatement.setString(2, year);
+                pStatement.setString(3, semester);
+                pStatement.setString(4, IE);
+
+                pStatement.executeUpdate();
+
+                pStatement.close();
+
                 break;
             }
 
-            String sql = "INSERT INTO course_opening (course, year, semester, IE) VALUES (?, ?, ?, ?)";
-
-            PreparedStatement pStatement = this.getConnection().prepareStatement(sql);
-            pStatement.setString(1, courseAll);
-            pStatement.setString(2, year);
-            pStatement.setString(3, semester);
-            pStatement.setString(4, IE);
-
-            pStatement.executeUpdate();
-
-            pStatement.close();
         }
 
     
@@ -399,10 +385,15 @@ public class ContactDatabase extends AbstractDatabase {
 
             System.out.println(course + "|" + year + "|" + semester + "|" + IE);
 
-            String queryEnrollment = "SELECT * FROM enrollment WHERE year = ? AND semester = ?";
+            //tokenize course
+            String[] tokens = course.split("\\|");
+            String courseCode = tokens[0];
+
+            String queryEnrollment = "SELECT * FROM enrollment WHERE code = ? AND year = ? AND semester = ?";
             PreparedStatement statementEnrollment = this.getConnection().prepareStatement(queryEnrollment);
-            statementEnrollment.setString(1, year);
-            statementEnrollment.setString(2, semester);
+            statementEnrollment.setString(1, courseCode);
+            statementEnrollment.setString(2, year);
+            statementEnrollment.setString(3, semester);
             ResultSet enrollmentResult = statementEnrollment.executeQuery();
 
             while (enrollmentResult.next()) {
@@ -441,7 +432,7 @@ public class ContactDatabase extends AbstractDatabase {
             Integer year = studentResult.getInt("year");
 
             //cek apakah ada data di dalam enrollment yang memiliki nim yang sama
-            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code AND m1.semester = m2.semester)";
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
             PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
             enrollmentStat.setString(1, nim);
             ResultSet result = enrollmentStat.executeQuery();
@@ -462,22 +453,32 @@ public class ContactDatabase extends AbstractDatabase {
             System.out.println(nim + "|" + studentName + "|" + year + "|" + studyProgram + "|" + String.format("%.2f", totalIPK / totalSKS) + "|" + totalSKS);
         }
 
-        String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code AND m1.semester = m2.semester)";
-        PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
-        enrollmentStat.setString(1, nim);
-        ResultSet result = enrollmentStat.executeQuery();
+        //while
+        String query2 = "SELECT * FROM student WHERE nim = ?";
+        PreparedStatement statement2 = this.getConnection().prepareStatement(query2);
+        statement2.setString(1, nim);
+        ResultSet studentResult2 = statement2.executeQuery();
 
-        // Jika ada data di dalam enrollment
-        while (result.next()) {
-            String Enrollnim = result.getString("nim");
-            String Enrollcode = result.getString("code");
-            String Enrolyear = result.getString("year");
-            String Enrolsemester = result.getString("semester");
-            String Enrollgrade = result.getString("grade");
 
-            System.out.println(Enrollnim + "|" + Enrollcode + "|" + Enrolyear + "|" + Enrolsemester + "|" + Enrollgrade);
-        }
+        while (studentResult2.next()){
+
+            String RealEnroll = "SELECT * FROM enrollment m1 WHERE nim = ? AND RIGHT(year, 4) = (SELECT MAX(CAST(SUBSTRING_INDEX(m2.year, '/', -1) AS UNSIGNED)) FROM enrollment m2 WHERE m1.code = m2.code)";
+            PreparedStatement enrollmentStat = this.getConnection().prepareStatement(RealEnroll);
+            enrollmentStat.setString(1, nim);
+            ResultSet result = enrollmentStat.executeQuery();
+
+            // Jika ada data di dalam enrollment
+            while (result.next()) {
+                String Enrollnim = result.getString("nim");
+                String Enrollcode = result.getString("code");
+                String Enrolyear = result.getString("year");
+                String Enrolsemester = result.getString("semester");
+                String Enrollgrade = result.getString("grade");
+
+                System.out.println(Enrollcode + "|" + Enrollnim + "|" + Enrolyear + "|" + Enrolsemester + "|" + Enrollgrade);
+            }
         
+        }
         
     
         statement.close();
@@ -545,7 +546,6 @@ public class ContactDatabase extends AbstractDatabase {
        
     @Override
     protected void prepareTables() throws SQLException {
-        // TODO Auto-generated method stub
         this.createTables();
         //this.seedTables();
     }

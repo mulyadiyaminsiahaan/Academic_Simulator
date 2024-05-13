@@ -1,0 +1,10 @@
+main\java\academic\model\Enrollment.class
+main\java\academic\model\Student.class
+main\java\academic\model\Lecturer.class
+main\java\academic\model\CourseOpening.class
+main\java\academic\model\CourseService.class
+main\java\academic\model\ContactDatabase.class
+main\java\academic\model\Course.class
+main\java\academic\model\AbstractDatabase.class
+main\java\academic\driver\Driver1.class
+main\java\academic\model\Person.class

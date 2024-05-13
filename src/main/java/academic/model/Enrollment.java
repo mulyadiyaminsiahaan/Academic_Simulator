@@ -1,4 +1,4 @@
-package academic.model;
+package main.java.academic.model;
 
 /**
  * @author 12S22034 Mulyadi Yamin Siahaan

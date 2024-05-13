@@ -1,5 +1,5 @@
 compile :
-	javac src/academic/model/*.java src/academic/driver/*.java -d bin
+	mvn clean compile assembly:single
 
 test_01 :
-	cd bin && java academic.driver.Driver1
+	java -jar ./target/t09-using-maven-1.0-SNAPSHOT-jar-with-dependencies.jar

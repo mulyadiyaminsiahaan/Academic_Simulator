@@ -1,4 +1,4 @@
-package academic.model;
+package main.java.academic.model;
 
 //package inheritance;
 
