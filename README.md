@@ -1,20 +1,75 @@
-# T09 Transcript With Database
+# Academic Simulator
+## Case
+Butet baru saja bertemu dengan salah seorang dosen pemrograman yang memintanya untuk mengembangkan suatu program sederhana untuk mensimulasikan entitas-entitas di lingkup dunia akademik. Sebenarnya, sang dosen telah mengembangkan desain dasar dari simulator dan Butet hanya diminta untuk mengimplementasikannya. Sebagai langkah awal, simulator hanya akan menangani beberapa entitas yang definisinya sudah jelas, yakni mata kuliah (```course```), mata kuliah yang dibuka (```course open```), mahasiswa (```student```), dosen (```lecturer```) dan rencana studi (```enrollment```).
 
-Pada sesi ini anda diminta untuk kembali mengerjakan T08 Transcript dengan database sebagai media penyimpanan. Anda tidak diperkenankan menyimpan data pada solusi. Semua data diletakkan dan diambil dari database. Penyimpanan data pada solusi mendiskualifikasi anda dari penilaian.
+Berikut beberapa tantangan atau hal yang harus dipenuhi dari setiap entitas:
+**Course**
+Sebuah mata kuliah merupakan satu unit studi dalam suatu program akademik, yang ditandai dengan atribut seperti Kode Mata Kuliah, Nama Mata Kuliah, Kredit Mata Kuliah, dan Nilai Mata Kuliah. 
 
-## Transcript (academic.driver.Driver1, 100pts)
+Fungsionalitas yang terkait dengan mata kuliah akan meliputi: 
+1. Penambahan Mata Kuliah, yang memungkinkan penambahan mata kuliah baru ke dalam program;
+2. Riwayat Mata Kuliah, yang melacak kemajuan dan hasil dari semua mata kuliah yang diambil; 
+3. Cetak Mata Kuliah, yang memungkinkan pencetakan detail mata kuliah untuk keperluan pencatatan atau tinjauan.
 
-Pada sebuah transkrip tertuang daftar mata kuliah yang pernah ditempuh oleh seorang mahasiswa selama studi. Pada transkrip:
-1. Mata kuliah ditampilkan secara historis. Mata kuliah yang diselesaikan pada tahun ajaran 2020/2021 akan mendahului mata kuliah yang diselesaikan pada tahun ajaran 2021/2022. Demikian juga berlaku untuk periode semester.
-2. Bila dilakukan pengambilan suatu mata kuliah lebih dari satu kali, maka hanya pencapaian pada pengambilan terakhir akan ditampilkan.
+**Course Open**
+Pembukaan mata kuliah mengacu pada proses membuat mata kuliah tersedia untuk pendaftaran oleh mahasiswa, yang ditandai dengan atribut seperti Kode Mata Kuliah, Tahun Mata Kuliah, Semester Mata Kuliah, dan Dosen Awal Mata Kuliah. 
 
-Berikut adalah format perintah yang digunakan.
+Fungsionalitas yang terkait dengan pembukaan mata kuliah ini adalah Pembukaan Mata Kuliah, yang memungkinkan proses ini dilakukan sehingga mahasiswa dapat mendaftar dan mengikuti mata kuliah tersebut
 
-```bash
-student-transcript#<student-id>
-```
+**Student**
+Seorang mahasiswa mewakili individu yang terdaftar dalam mata kuliah akademik, dengan atribut seperti NIM (Nomor Induk Mahasiswa), Nama Mahasiswa, Tahun Mahasiswa, dan Program Studi Mahasiswa. 
 
-Simulator kemudian akan menampilkan performa mahasiswa secara kumulatir dan diikuti dengan informasi performa mahasiswa untuk setiap pengambilan mata kuliah (```enrollment```). Perhatikan contoh berikut.
+Fungsionalitas yang terkait dengan mahasiswa meliputi: 
+1. Penambahan Mahasiswa, yang memungkinkan pendaftaran mahasiswa baru;
+2. Detail Mahasiswa, yang menampilkan informasi lengkap tentang mahasiswa; 
+3. Transkrip Mahasiswa, yang mencakup catatan akademik mahasiswa;
+4. Cetak Mahasiswa, yang memungkinkan pencetakan informasi mahasiswa untuk keperluan administrasi atau tinjauan.
+
+**Lecturer**
+Seorang dosen adalah anggota staf akademik yang bertanggung jawab untuk mengajar mata kuliah, dengan atribut seperti ID Dosen, Nama Dosen, Nama Inisial Dosen, Email Dosen, dan Program Studi Dosen.
+
+Fungsionalitas yang terkait dengan dosen meliputi: 
+1. Penambahan Dosen, yang memungkinkan penambahan dosen baru ke dalam sistem;
+2. Cetak Dosen, yang memungkinkan pencetakan informasi dosen untuk keperluan administrasi atau referensi.
+
+**Enrollment**
+Enrollment mengacu pada proses mendaftarkan mahasiswa ke dalam mata kuliah, dengan atribut seperti Kode Mata Kuliah, NIM (Nomor Induk Mahasiswa), Tahun Pendaftaran, dan Semester Pendaftaran.
+
+Fungsionalitas yang terkait dengan pendaftaran meliputi:
+1. Penambahan Pendaftaran, yang memungkinkan pendaftaran mahasiswa baru ke dalam mata kuliah; 
+2. Nilai Pendaftaran, yang mencatat nilai yang diperoleh mahasiswa dalam mata kuliah tersebut; 
+3. Perbaikan Pendaftaran, yang memungkinkan mahasiswa untuk memperbaiki nilai melalui remedial;
+4. Cetak Pendaftaran, yang memungkinkan pencetakan informasi pendaftaran untuk keperluan administrasi atau tinjauan.
+
+Note: Pada sesi ini saya diminta untuk menyelesaikan persoalan di atas dengan database sebagai media penyimpanan.
+
+## Solution
+Sistem ini terdiri dari beberapa kelas utama, termasuk kelas utama Drive, kelas abstrak AbstractDatabase, dan kelas turunan ContactDatabase. Sistem ini dirancang untuk mengelola dan menghubungkan berbagai entitas dengan database.
+
+**Drive1**
+Kelas Drive adalah titik eksekusi utama atau program utama dari sistem ini. Kelas ini bertanggung jawab untuk meminta koneksi dengan basis data dan mengelola seluruh alur kerja program. Ketika program dijalankan, Drive akan menginisialisasi koneksi dengan basis data menggunakan kelas AbstractDatabase. Pada Class ini juga akan diimplementasikan perintah apa atau fungsionalitas apa yang ingin dijalankan. Dibuat dalam bentuk percangan if-else. Untuk menghentikan program saya menggunakan inputan "---".
+
+**AbstractDatabase**
+Kelas AbstractDatabase adalah kelas induk yang mendefinisikan kerangka dasar untuk menghubungkan dan berinteraksi dengan basis data. Kelas ini tidak diimplementasikan secara langsung tetapi akan diwarisi oleh kelas-kelas turunan. AbstractDatabase menyediakan metodologi dasar untuk koneksi basis data, termasuk penyimpanan dan pengambilan data dari basis data tersebut. Pada case ini juga dibuat sebuah table yang akan mengeksekusi nama-nama atribut di atas.
+
+**ContactDatabase**
+ContactDatabase adalah kelas turunan dari AbstractDatabase yang mengimplementasikan berbagai fungsionalitas khusus untuk setiap entitas dan atribut yang akan dikelola dalam sistem. Kelas ini mencakup metode untuk menyimpan, memperbarui, menghapus, dan mengambil data entitas dari basis data. Setiap entitas yang dikelola oleh sistem ini akan memiliki representasi dan fungsionalitasnya sendiri dalam ContactDatabase.
+
+Berikut beberapa deskripsi dari fungsionalitas dari setiap entitas:
+Berikut adalah fungsi-fungsi yang tersedia dalam sistem manajemen kampus:
+
+1. **Tambah Mahasiswa (student-add)**: Menambahkan data mahasiswa ke dalam basis data kampus.
+2. **Tambah Dosen (lecturer-add)**: Menambahkan data dosen ke dalam basis data kampus.
+3. **Tambah Informasi Mata Kuliah (course-add)**: Menambahkan informasi mengenai mata kuliah ke dalam basis data kampus.
+4. **Buka Mata Kuliah (course-open)**: Menandai atau memberi pemberitahuan jika sebuah mata kuliah telah dibuka.
+5. **Riwayat Mata Kuliah (course-history)**: Memberikan informasi terperinci mengenai suatu mata kuliah.
+6. **Tambah Pendaftaran (enrollment-add)**: Digunakan untuk menambahkan aktivitas seorang mahasiswa yang ingin mengambil sebuah mata kuliah.
+7. **Nilai Pendaftaran (enrollment-grade)**: Digunakan untuk memasukkan nilai bagi seorang mahasiswa yang mengambil sebuah mata kuliah tertentu.
+8. **Pemulihan Pendaftaran (enrollment-remedial)**: Digunakan untuk memasukkan nilai pemulihan bagi seorang mahasiswa yang mengulang sebuah mata kuliah, asalkan mereka belum mendapat nilai pemulihan sebelumnya.
+9. **Detail Mahasiswa (student-details)**: Menampilkan informasi seorang mahasiswa.
+10. **Transkrip Mahasiswa (student-transcript)**: Menampilkan informasi seorang mahasiswa beserta mata kuliah yang telah diambilnya.
+
+Untuk memastikan program tepat dapat dijalankan test sebagai berikut:
 
 **Input**:
 
@@ -83,35 +138,6 @@ student-transcript#12S20003
 12S2102|12S20003|2022/2023|odd|B(AB)
 
 ```
-
-**Note**:
-
-Pada solusi anda, aplikasikan salah satu bentuk dari konsep Nested Constructs (Inner Class, Static Nested Class, Local Class, atau Anonymous Class).
-
-## Reporting
-Lakukan pertemuan dengan pair anda untuk mendiskusikan persoalan dan pengembangan solusi. Rekaman dari pertemuan tersebut menjadi bagian dari artefak tugas yang harus dikumpulkan. Durasi rekaman minimal **30 menit**.
-
-Presentasikan pekerjaan anda dalam sebuah video. Pada presentasi:
-1. Jabarkan solusi anda kelas-per-kelas.
-2. Berikan rationale dari setiap implementasi yang anda hasilkan serta berikan argumen mengapa pilihan implementasi anda merupakan pilihan terbaik.
-3. Jabarkan alir eksekusi dari solusi anda.
-4. Demonstrasikan pekerjaan anda.
-5. Tunjukkan hasil yang anda peroleh dari GitHub Classroom.
-6. Sebutkan kendala yang dihadapi dalam pengerjaan tugas kali ini.
-**7. Sebutkan alur pengerjaan anda dengan menerapkan database.
-8. Tunjukkan schema atau database anda sesuai dengan class diagram dan sequence diagram.**
-
-Note: Semakin tajam argumen dan penjabaran anda semakin mudah penilaian dilakukan.
-
-Kriteria Video Presentasi:
-+ Fullscreen (taskbar terlihat).
-+ Suara jernih dan dapat dengan jelas terdengar.
-+ Posting video anda di YouTube, di-set "Not For Kids" dengan visibility Unlisted.
-
-## Submission
-1. ```src/academic/model/*.java```;
-2. ```src/academic/driver/*.java```;
-3. changelog.txt
 
 ## How to submit?
 Please see https://youtu.be/ZOhgmVjWFyo
